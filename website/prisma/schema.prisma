@@ -10,13 +10,21 @@ datasource db {
   shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // Used for migrations
 }
 
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  MODERATOR
+  USER
+}
+
 model User {
   id          Int        @id @default(autoincrement())
-  isAdmin     Boolean    @default(false) // Whether the user is an admin or not
+  role        Role       @default(USER) // User's role
   email       String     @unique // User's email address
   password    String // User's password (hashed)
   firstName   String // User's first name
   lastName    String // User's last name
+  image       String? // URL of user's profile picture
   address     String? // User's address
   phoneNumber String? // User's phone number
   createdAt   DateTime   @default(now()) // Timestamp of user creation

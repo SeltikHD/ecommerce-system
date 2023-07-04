@@ -24,10 +24,11 @@
     "files.exclude": {
         "**/node_modules": true,
         "**/*{-,.}lock*": true,
-        "**/.prettierignore": false,
-        "**/.eslintignore": false,
+        "**/.next": true,
+        "**/.prettierignore": true,
+        "**/.eslintignore": true,
 
-        "**/postcss.config.js": false,
+        "**/postcss.config.js": true,
         "**/tsconfig.tsbuildinfo": true
     }
 }

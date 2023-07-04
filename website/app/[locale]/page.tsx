@@ -1,13 +1,16 @@
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 
 export default function Home() {
+    const t = useTranslations('Index');
+
     return (
         <div className="flex h-screen bg-black">
             <div className="w-screen h-screen flex flex-col justify-center items-center">
                 <Image width={512} height={512} src="/logo.png" alt="Platforms on Vercel" className="w-48 h-48" />
                 <div className="text-center max-w-screen-sm mb-10">
-                    <h1 className="text-stone-200 font-bold text-2xl">Next.js Prisma PostgreSQL Auth Starter</h1>
+                    <h1 className="text-stone-200 font-bold text-2xl">{t('title')}</h1>
                     <p className="text-stone-400 mt-5">
                         This is a{' '}
                         <a

@@ -9,7 +9,11 @@ export async function POST(req: Request) {
         typeof firstName !== 'string' ||
         typeof lastName !== 'string' ||
         typeof email !== 'string' ||
-        typeof password !== 'string'
+        typeof password !== 'string' ||
+        firstName.length <= 0 ||
+        lastName.length <= 0 ||
+        email.length <= 0 ||
+        password.length <= 0
     ) {
         return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
     }

@@ -1,0 +1,13 @@
+{
+    "Index": {
+        "title": "Template com Next.js Prisma PostgreSQL Auth"
+    },
+    "Locale": {
+        "title": "E-Commerce",
+        "description": "Este é um E-Commerce",
+        "twitter": {
+            "title": "E-Commerce",
+            "description": "Este é um E-Commerce"
+        }
+    }
+}
