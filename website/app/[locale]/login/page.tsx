@@ -1,8 +1,11 @@
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Form from '@/components/form';
 import Link from 'next/link';
 
 export default function Login() {
+    const t = useTranslations();
+
     return (
         <div className="flex h-screen w-screen items-center justify-center bg-gray-50">
             <div className="z-10 w-full max-w-md overflow-hidden rounded-2xl border border-gray-100 shadow-xl">
@@ -17,10 +20,29 @@ export default function Login() {
                             height={20}
                         />
                     </Link>
-                    <h3 className="text-xl font-semibold">Sign In</h3>
-                    <p className="text-sm text-gray-500">Use your email and password to sign in</p>
+                    <h3 className="text-xl font-semibold">{t('Login.title')}</h3>
+                    <p className="text-sm text-gray-500">{t('Login.description')}</p>
                 </div>
-                <Form type="login" />
+                <Form
+                    texts={{
+                        emailAddressLabel: t('Components.LoginForm.emailAddressLabel'),
+                        emailAddressPlaceholder: t('Components.LoginForm.emailAddressPlaceholder'),
+                        passwordLabel: t('Components.LoginForm.passwordLabel'),
+                        fullNameLabel: t('Components.LoginForm.fullNameLabel'),
+                        fullNamePlaceholder: t('Components.LoginForm.fullNamePlaceholder'),
+                        fullNamePattern: t('Components.LoginForm.fullNamePattern'),
+                        buttonLabelSignIn: t('Components.LoginForm.buttonLabelSignIn'),
+                        buttonLabelSignUp: t('Components.LoginForm.buttonLabelSignUp'),
+                        emailError: t('Components.LoginForm.emailError'),
+                        passwordError: t('Components.LoginForm.passwordError'),
+                        fullNameError: t('Components.LoginForm.fullNameError'),
+                        signInLinkText: t('Components.LoginForm.signInLinkText'),
+                        signUpLinkText: t('Components.LoginForm.signUpLinkText'),
+                        signInText: t('Components.LoginForm.signInText'),
+                        signUpText: t('Components.LoginForm.signUpText'),
+                    }}
+                    type="login"
+                />
             </div>
         </div>
     );

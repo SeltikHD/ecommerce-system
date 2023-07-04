@@ -4,6 +4,7 @@ import prisma from '@/lib/prisma';
 
 export async function POST(req: Request) {
     const { firstName, lastName, email, password } = await req.json();
+    console.log(firstName, lastName, email, password);
 
     if (
         typeof firstName !== 'string' ||

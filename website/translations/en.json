@@ -2,6 +2,39 @@
     "Index": {
         "title": "Next.js Prisma PostgreSQL Auth Starter"
     },
+    "Login": {
+        "title": "Sign In",
+        "description": "Use your email and password to sign in"
+    },
+    "SignUp": {
+        "title": "Sign Up",
+        "description": "Create an account with your email, password and full name"
+    },
+    "Components": {
+        "SearchBar": {
+            "placeholder": "What are you looking for?"
+        },
+        "Header": {
+            "home": "Home"
+        },
+        "LoginForm": {
+            "fullNameLabel": "Full Name",
+            "fullNamePlaceholder": "Your full name",
+            "fullNamePattern": "\\S+\\s+\\S+.*",
+            "fullNameError": "Please enter your full name",
+            "emailError": "Please enter a valid email address",
+            "passwordError": "Please enter a valid password",
+            "emailAddressLabel": "Email Address",
+            "emailAddressPlaceholder": "Your email address",
+            "passwordLabel": "Password",
+            "buttonLabelSignIn": "Sign In",
+            "buttonLabelSignUp": "Sign Up",
+            "signInText": "Already have an account?",
+            "signUpText": "Don't have an account?",
+            "signUpLinkText": "Sign Up!",
+            "signInLinkText": "Sign In!"
+        }
+    },
     "Locale": {
         "title": "E-Commerce Website",
         "description": "This is an E-Commerce Website",

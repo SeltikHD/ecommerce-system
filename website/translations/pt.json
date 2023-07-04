@@ -2,6 +2,39 @@
     "Index": {
         "title": "Template com Next.js Prisma PostgreSQL Auth"
     },
+    "Login": {
+        "title": "Entrar na conta",
+        "description": "Use seu email e senha para entrar na conta"
+    },
+    "SignUp": {
+        "title": "Criar uma conta",
+        "description": "Use seu email, senha e nome completo para criar a conta"
+    },
+    "Components": {
+        "SearchBar": {
+            "placeholder": "O que você está procurando?"
+        },
+        "Header": {
+            "home": "Início"
+        },
+        "LoginForm": {
+            "fullNameLabel": "Nome completo",
+            "fullNamePlaceholder": "Seu nome completo",
+            "fullNamePattern": "\\S+\\s+\\S+.*",
+            "fullNameError": "Por favor coloque seu nome completo",
+            "emailError": "Por favor coloque um endereço de email válido",
+            "passwordError": "Por favor coloque uma senha válida",
+            "emailAddressLabel": "Endereço de email",
+            "emailAddressPlaceholder": "Seu endereço de email",
+            "passwordLabel": "Senha",
+            "buttonLabelSignIn": "Entrar",
+            "buttonLabelSignUp": "Criar conta",
+            "signInText": "Já tem uma conta?",
+            "signUpText": "Não tem uma conta?",
+            "signUpLinkText": "Criar uma conta",
+            "signInLinkText": "Entrar na conta"
+        }
+    },
     "Locale": {
         "title": "E-Commerce",
         "description": "Este é um E-Commerce",

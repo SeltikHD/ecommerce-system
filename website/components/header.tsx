@@ -1,82 +1,57 @@
-'use client';
-
-import { useState } from 'react';
+import { FiShoppingCart, FiUser } from 'react-icons/fi';
+import { getServerSession } from 'next-auth';
+import SearchBar from './search-bar';
+import prisma from '@/lib/prisma';
 import Image from 'next/image';
-import clsx from 'clsx';
 import Link from 'next/link';
+import clsx from 'clsx';
 
-const Navbar = () => {
-    const [open, setOpen] = useState(false);
+const Navbar = async ({ searchPlaceholder, homeText }: { searchPlaceholder: string; homeText: string }) => {
+    const session = await getServerSession();
+    const categories = await prisma.category.findMany({ take: 6 });
 
     return (
-        <header className="flex items-center w-full bg-white fixed">
-            <div className="container">
-                <div className="relative flex items-center justify-between -mx-4">
-                    <div className="max-w-full px-8 w-60">
-                        <Link href="/" className="block w-full py-5">
+        <header className="w-full bg-white fixed border-gray-300 border-b">
+            <div className="w-full h-20 flex items-center justify-between">
+                <Link href="/" className="px-6 hidden lg:block">
+                    <Image src={process.env.NEXT_PUBLIC_SITE_URL + '/logo.svg'} alt="Logo" width={160} height={40} />
+                </Link>
+                <SearchBar
+                    className="ml-[2%] w-[65%] lg:ml-0 lg:w-[50%]"
+                    placeholder={searchPlaceholder ?? 'What are you looking for?'}
+                />
+                <div className="flex items-center space-x-4 mr-2 sm:mr-4 lg:mr-6">
+                    <FiShoppingCart className="text-gray-800 text-3xl cursor-pointer hover:text-gray-600" />
+                    <Link href={!session?.user ? '/login' : '/account'}>
+                        {session?.user.image ? (
                             <Image
-                                src={process.env.NEXT_PUBLIC_SITE_URL + '/vercel.svg'}
-                                alt="Logo"
-                                width={283}
-                                height={64}
+                                src={session.user.image}
+                                alt={session.user.firstName + ' avatar'}
+                                width={48}
+                                height={48}
                             />
-                        </Link>
-                    </div>
-                    <div className="flex items-center justify-between w-full px-4">
-                        <div>
-                            <button
-                                onClick={() => setOpen(!open)}
-                                id="navbarToggler"
-                                className={clsx(
-                                    open && 'navbarTogglerActive',
-                                    'absolute right-4 top-1/2 block -translate-y-1/2 rounded-lg px-3 py-[6px] ring-primary focus:ring-2 lg:hidden',
-                                )}
-                            >
-                                <span className="relative my-[6px] block h-[2px] w-[30px] bg-body-color"></span>
-                                <span className="relative my-[6px] block h-[2px] w-[30px] bg-body-color"></span>
-                                <span className="relative my-[6px] block h-[2px] w-[30px] bg-body-color"></span>
-                            </button>
-                            <nav
-                                id="navbarCollapse"
-                                className={clsx(
-                                    !open && 'hidden',
-                                    'absolute right-4 top-full w-full max-w-[250px] rounded-lg bg-white py-5 px-6 shadow lg:static lg:block lg:w-full lg:max-w-full lg:shadow-none',
-                                )}
-                            >
-                                <ul className="block lg:flex">
-                                    <ListItem navItemStyles="text-dark hover:text-primary" NavLink="/">
-                                        Home
-                                    </ListItem>
-                                    <ListItem navItemStyles="text-dark hover:text-primary" NavLink="/#">
-                                        Payment
-                                    </ListItem>
-                                    <ListItem navItemStyles="text-dark hover:text-primary" NavLink="/#">
-                                        About
-                                    </ListItem>
-                                    <ListItem navItemStyles="text-dark hover:text-primary" NavLink="/#">
-                                        Blog
-                                    </ListItem>
-                                </ul>
-                            </nav>
-                        </div>
-                        <div className="justify-end hidden pr-16 sm:flex lg:pr-0">
-                            <Link
-                                href="/login"
-                                className="py-3 text-base font-medium px-7 text-dark hover:text-primary"
-                            >
-                                Sign in
-                            </Link>
-
-                            <Link
-                                href="/register"
-                                className="py-3 text-base font-medium text-white rounded-lg bg-primary px-7 hover:bg-opacity-90"
-                            >
-                                Sign Up
-                            </Link>
-                        </div>
-                    </div>
+                        ) : (
+                            <FiUser className="text-gray-800 border-black border-2 p-2 rounded-full text-5xl cursor-pointer hover:text-gray-600" />
+                        )}
+                    </Link>
                 </div>
             </div>
+            <nav className="hidden lg:block w-full">
+                <ul className="block lg:flex">
+                    <ListItem className="text-dark hover:text-primary border-gray-300 border-r px-8" NavLink="/">
+                        {homeText}
+                    </ListItem>
+                    {categories.map(({ id, name }) => (
+                        <ListItem
+                            key={'NavBar-' + id}
+                            className="text-dark hover:text-primary border-gray-300 border-r px-8"
+                            NavLink={`/${name}`}
+                        >
+                            {name}
+                        </ListItem>
+                    ))}
+                </ul>
+            </nav>
         </header>
     );
 };
@@ -85,11 +60,11 @@ export default Navbar;
 
 const ListItem = ({
     children,
-    navItemStyles,
+    className,
     NavLink,
 }: {
     children: React.ReactNode;
-    navItemStyles: string;
+    className?: string;
     NavLink: string;
 }) => {
     return (
@@ -97,7 +72,7 @@ const ListItem = ({
             <li>
                 <Link
                     href={NavLink}
-                    className={clsx('flex py-2 text-base font-medium lg:ml-12 lg:inline-flex', navItemStyles)}
+                    className={clsx('flex justify-center items-center py-2 text-base font-medium', className)}
                 >
                     {children}
                 </Link>
