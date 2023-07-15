@@ -2,6 +2,39 @@
     "Index": {
         "title": "Template com Next.js Prisma PostgreSQL Auth"
     },
+    "Account": {
+        "title": "Conta",
+        "description": "Esta é a sua conta",
+        "name": "Nome",
+        "email": "Email",
+        "phoneNumber": "Telefone",
+        "updateButton": "Atualizar",
+        "userUpdated": "Usuário atualizado com sucesso",
+        "userUpdateFailed": "Falha ao atualizar o usuário",
+        "signOut": "Sair",
+
+        "addressName": "Nome do endereço",
+        "addresses": "Endereços",
+        "fullAddress": "[street] [number], [neighborhood], [city] - [state], [postalCode]",
+        "noneAddresses": "Nenhum endereço cadastrado",
+        "addAddress": "Adicionar endereço",
+        "addressAdded": "Endereço adicionado com sucesso",
+        "addressAddFailed": "Falha ao adicionar o endereço",
+        "addressUpdated": "Endereço atualizado com sucesso",
+        "addressUpdateFailed": "Falha ao atualizar o endereço",
+        "addressDeleted": "Endereço deletado com sucesso",
+        "addressDeleteFailed": "Falha ao deletar o endereço",
+        "addressDeleteConfirm": "Tem certeza que deseja deletar este endereço?",
+        "addressDeleteConfirmTitle": "Deletar endereço",
+        "yes": "Sim",
+        "no": "Não",
+        "street": "Rua",
+        "number": "Número",
+        "neighborhood": "Bairro",
+        "city": "Cidade",
+        "state": "Estado",
+        "postalCode": "CEP"
+    },
     "Login": {
         "title": "Entrar na conta",
         "description": "Use seu email e senha para entrar na conta"
@@ -9,6 +42,10 @@
     "SignUp": {
         "title": "Criar uma conta",
         "description": "Use seu email, senha e nome completo para criar a conta"
+    },
+    "SignOut": {
+        "title": "Sair da conta",
+        "description": "Você está saindo da conta"
     },
     "Components": {
         "SearchBar": {
@@ -32,7 +69,9 @@
             "signInText": "Já tem uma conta?",
             "signUpText": "Não tem uma conta?",
             "signUpLinkText": "Criar uma conta",
-            "signInLinkText": "Entrar na conta"
+            "signInLinkText": "Entrar na conta",
+            "signUpSuccess": "Conta criado com sucesso! Redirecionando para a página de login...",
+            "signUpFailed": "Falha ao criar a conta"
         }
     },
     "Locale": {

@@ -1,13 +1,11 @@
 // These styles apply to every route in the application
 import '@/styles/globals.css';
 
+import type { Metadata } from 'next';
 import { createTranslator, useLocale } from 'next-intl';
-import { Metadata } from 'next';
-import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { Toaster } from 'react-hot-toast';
 import { Inter } from 'next/font/google';
-import AuthStatus from '@/components/auth-status';
 import Navbar from '@/components/header';
 
 /* TODO: Uncomment this to enable static generation
@@ -63,12 +61,9 @@ export default async function RootLayout({
         const t = createTranslator({ locale, messages });
 
         return (
-            <html lang={locale}>
+            <html data-theme="light" lang={locale}>
                 <body className={inter.variable}>
                     <Toaster />
-                    <Suspense fallback="Loading...">
-                        <AuthStatus />
-                    </Suspense>
                     <Navbar
                         homeText={t('Components.Header.home')}
                         searchPlaceholder={t('Components.SearchBar.placeholder')}

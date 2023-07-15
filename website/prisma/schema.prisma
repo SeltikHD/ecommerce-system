@@ -1,6 +1,5 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["jsonProtocol"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -10,28 +9,57 @@ datasource db {
   shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // Used for migrations
 }
 
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id") // User who owns the account
+  type              String // Account type (e.g. 'email', 'oauth', ...)
+  provider          String // Provider identifier (e.g. 'google', 'facebook', ...)
+  providerAccountId String  @map("provider_account_id") // Provider's account ID for the user
+  refresh_token     String? @db.Text // Refresh token (only included in some cases)
+  access_token      String? @db.Text // Access token (only included in some cases)
+  expires_at        Int? // Timestamp of token expiration (only included in some cases)
+  token_type        String? // Type of token (only included in some cases)
+  scope             String? // Scope of access token (only included in some cases)
+  id_token          String? @db.Text // ID token (only included in some cases)
+  session_state     String? // Session state (only included in some cases)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token") // Session token (used for authentication)
+  userId       String   @map("user_id") // User who owns the session
+  expires      DateTime // Timestamp of session expiration
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 enum Role {
-  SUPER_ADMIN
-  ADMIN
-  MODERATOR
-  USER
+  SUPER_ADMIN // Super admin
+  ADMIN // Admin
+  MODERATOR // Moderator
+  USER // User
 }
 
 model User {
-  id          Int        @id @default(autoincrement())
-  role        Role       @default(USER) // User's role
-  email       String     @unique // User's email address
-  password    String // User's password (hashed)
-  firstName   String // User's first name
-  lastName    String // User's last name
-  image       String? // URL of user's profile picture
-  address     String? // User's address
-  phoneNumber String? // User's phone number
-  createdAt   DateTime   @default(now()) // Timestamp of user creation
-  updatedAt   DateTime   @updatedAt // Timestamp of last update
-  cartItems   CartItem[] // Items in user's cart
-  favorites   Product[] // Products marked as favorites by the user
-  comments    Comment[] // Comments made by the user
+  id            String     @id @default(cuid())
+  name          String? // User's name
+  email         String?    @unique // User's email (unique)
+  emailVerified DateTime?  @map("email_verified") // Timestamp of email verification
+  image         String? // URL of user's profile picture
+  accounts      Account[] // Accounts linked to the user
+  sessions      Session[] // Sessions opened by the user
+  role          Role       @default(USER) // User's role
+  password      String? // User's password (hashed)
+  addresses     Address[] // Addresses associated with the user
+  phoneNumber   String?    @map("phone_number") // User's phone number
+  createdAt     DateTime   @default(now()) @map("created_at") // Timestamp of user creation
+  updatedAt     DateTime   @updatedAt @map("updated_at") // Timestamp of last update
+  cartItems     CartItem[] // Items in user's cart
+  favorites     Product[] // Products marked as favorites by the user
+  comments      Comment[] // Comments made by the user
 }
 
 model Product {
@@ -41,12 +69,12 @@ model Product {
   price       Float // Product's price
   images      String[] // URLs of product images
   category    Category   @relation(fields: [categoryId], references: [id]) // Category to which the product belongs
-  categoryId  Int
-  createdAt   DateTime   @default(now()) // Timestamp of product creation
-  updatedAt   DateTime   @updatedAt // Timestamp of last update
+  categoryId  Int        @map("category_id")
+  createdAt   DateTime   @default(now()) @map("created_at") // Timestamp of product creation
+  updatedAt   DateTime   @updatedAt @map("updated_at") // Timestamp of last update
   comments    Comment[] // Comments made on the product
   User        User?      @relation(fields: [userId], references: [id])
-  userId      Int?
+  userId      String?    @map("user_id")
   CartItem    CartItem[]
 }
 
@@ -62,21 +90,37 @@ model Comment {
   id        Int      @id @default(autoincrement())
   content   String // Comment content
   rating    Int      @default(0) // Rating given by the user (0-5)
-  createdAt DateTime @default(now()) // Timestamp of comment creation
-  updatedAt DateTime @updatedAt // Timestamp of last update
+  createdAt DateTime @default(now()) @map("created_at") // Timestamp of comment creation
+  updatedAt DateTime @updatedAt @map("updated_at") // Timestamp of last update
   user      User     @relation(fields: [userId], references: [id]) // User who made the comment
-  userId    Int
+  userId    String   @map("user_id")
   product   Product  @relation(fields: [productId], references: [id]) // Product on which the comment was made
-  productId Int
+  productId Int      @map("product_id")
 }
 
 model CartItem {
   id        Int      @id @default(autoincrement())
   quantity  Int // Quantity of the product in the cart
-  createdAt DateTime @default(now()) // Timestamp of cart item creation
-  updatedAt DateTime @updatedAt // Timestamp of last update
+  createdAt DateTime @default(now()) @map("created_at") // Timestamp of cart item creation
+  updatedAt DateTime @updatedAt @map("updated_at") // Timestamp of last update
   user      User     @relation(fields: [userId], references: [id]) // User who added the item to the cart
-  userId    Int
+  userId    String   @map("user_id")
   product   Product  @relation(fields: [productId], references: [id]) // Product in the cart
-  productId Int
+  productId Int      @map("product_id")
+}
+
+model Address {
+  id           Int    @id @default(autoincrement())
+  name         String // Name of the address (e.g. 'Home', 'Work', ...)
+  street       String // Street name
+  number       String // Street number
+  neighborhood String // Neighborhood
+  city         String // City
+  state        String // State
+  postalCode   String // Postal code
+  user         User   @relation(fields: [userId], references: [id])
+  userId       String @map("user_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 }

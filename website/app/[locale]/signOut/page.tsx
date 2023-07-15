@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import { signOut } from 'next-auth/react';
 import Image from 'next/image';
@@ -9,6 +10,8 @@ export default function Login() {
     useEffect(() => {
         signOut();
     }, []);
+
+    const t = useTranslations();
 
     return (
         <div className="flex h-screen w-screen items-center justify-center bg-gray-50">
@@ -24,7 +27,8 @@ export default function Login() {
                             height={20}
                         />
                     </Link>
-                    <h3 className="text-xl font-semibold">Sign Out</h3>
+                    <h3 className="text-xl font-semibold">{t('SignOut.title')}</h3>
+                    <p className="text-sm text-gray-500">{t('SignOut.description')}</p>
                 </div>
             </div>
         </div>

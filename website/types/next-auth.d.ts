@@ -1,24 +1,14 @@
-import type { DefaultSession } from 'next-auth';
-import type { Role } from '@prisma/client';
+import type { User as UserPrisma } from '@prisma/client';
+import type { DefaultJWT } from 'next-auth/jwt';
 
-type CustomUser = {
-    id: number;
-    role: Role;
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-    image: string | null;
-    address: string | null;
-    phoneNumber: string | null;
-    createdAt: Date;
-    updatedAt: Date;
-} & DefaultSession['user'];
+type CustomUser = UserPrisma;
 
 declare module 'next-auth' {
     interface Session {
         user: User;
     }
+
+    type JWT = DefaultJWT & User;
 
     type User = CustomUser;
 }

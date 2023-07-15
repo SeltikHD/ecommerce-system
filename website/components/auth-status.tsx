@@ -1,7 +1,8 @@
 import { getServerSession } from 'next-auth/next';
+import { callbacks } from '@/app/api/auth/[...nextauth]/route';
 
 export default async function AuthStatus() {
-    const session = await getServerSession();
+    const session = await getServerSession(callbacks);
 
     return (
         <div className="absolute top-5 w-full flex justify-center items-center">

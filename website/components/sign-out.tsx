@@ -1,10 +1,15 @@
 'use client';
+import type { DetailedHTMLProps, ButtonHTMLAttributes } from 'react';
 import { signOut } from 'next-auth/react';
 
-export default function SignOut() {
+export default function SignOut(props: DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>) {
     return (
-        <button className="text-stone-400 hover:text-stone-200 transition-all" onClick={() => signOut()}>
-            Goddammit, sign me out!
-        </button>
+        <button
+            className="btn btn-error"
+            // eslint-disable-next-line react/no-children-prop
+            children="Sign Out"
+            {...props}
+            onClick={() => signOut()}
+        />
     );
 }

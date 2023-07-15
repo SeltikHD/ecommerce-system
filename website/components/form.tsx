@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { signIn } from 'next-auth/react';
@@ -32,6 +32,8 @@ type FormProps = {
         signUpText: string;
         signUpLinkText: string;
         signInLinkText: string;
+        signUpSuccess: string;
+        signUpFailed: string;
     };
 };
 
@@ -43,6 +45,8 @@ export default function Form({ type, texts }: FormProps) {
         handleSubmit,
         formState: { errors },
     } = useForm<FormValues>();
+
+    const searchParams = useSearchParams();
 
     const onSubmit = async (data: FormValues) => {
         setLoading(true);
@@ -59,45 +63,41 @@ export default function Form({ type, texts }: FormProps) {
                 setLoading(false);
                 toast.error(response.error);
             } else {
-                router.push('/');
+                toast.success('');
+
+                setTimeout(() => {
+                    router.push(searchParams.get('callbackUrl') ?? '/account');
+                }, 2000);
             }
         } else {
             const { fullName, email, password } = data;
 
             if (fullName) {
-                const name = splitFullName(fullName);
-
-                if (name !== null) {
-                    const { firstName, lastName } = name;
-
-                    fetch('/api/auth/register', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            firstName,
-                            lastName,
-                            email,
-                            password,
-                        }),
-                    }).then(async res => {
-                        setLoading(false);
-                        if (res.status === 200) {
-                            toast.success('Account created! Redirecting to login...');
-
-                            setTimeout(() => {
-                                router.push('/login');
-                            }, 2000);
-                        } else {
-                            const { error } = await res.json();
-                            toast.error(error);
-                        }
-                    });
-                } else {
+                fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        fullName,
+                        email,
+                        password,
+                    }),
+                }).then(async res => {
                     setLoading(false);
-                    toast.error(texts.fullNameError);
-                }
+
+                    if (res.status === 200) {
+                        toast.success(texts.signUpSuccess);
+
+                        setTimeout(() => {
+                            router.push('/login');
+                        }, 2000);
+                    } else {
+                        const { error } = await res.json();
+
+                        toast.error(`${texts.signUpFailed}: ${error ?? 'unknown error'}`);
+                    }
+                });
             } else {
                 setLoading(false);
                 toast.error(texts.fullNameError);
@@ -182,17 +182,4 @@ export default function Form({ type, texts }: FormProps) {
             )}
         </form>
     );
-}
-
-function splitFullName(fullName: string): { firstName: string; lastName: string } | null {
-    const names = fullName.split(' ');
-
-    if (names.length >= 2) {
-        const firstName = names[0] ?? '';
-        const lastName = names[names.length - 1] ?? '';
-
-        return { firstName, lastName };
-    }
-
-    return null;
 }
