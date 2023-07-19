@@ -9,7 +9,8 @@ export function replaceValues(value: string, replacer?: Record<string, string>):
         if (Object.prototype.hasOwnProperty.call(replacer, key)) {
             const replaceKey = `[${key}]`;
             const replaceValue = replacer[key];
-            replacedValue = replacedValue.replace(new RegExp(replaceKey, 'g'), replaceValue);
+
+            replacedValue = replacedValue.replaceAll(replaceKey, replaceValue);
         }
     }
 

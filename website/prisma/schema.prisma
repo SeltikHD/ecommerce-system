@@ -12,8 +12,8 @@ datasource db {
 model Account {
   id                String  @id @default(cuid())
   userId            String  @map("user_id") // User who owns the account
-  type              String // Account type (e.g. 'email', 'oauth', ...)
-  provider          String // Provider identifier (e.g. 'google', 'facebook', ...)
+  type              String // Account type (e.g., 'email', 'oauth', ...)
+  provider          String // Provider identifier (e.g., 'google', 'facebook', ...)
   providerAccountId String  @map("provider_account_id") // Provider's account ID for the user
   refresh_token     String? @db.Text // Refresh token (only included in some cases)
   access_token      String? @db.Text // Access token (only included in some cases)
@@ -38,28 +38,32 @@ model Session {
 
 enum Role {
   SUPER_ADMIN // Super admin
-  ADMIN // Admin
+  STOCK // Stock manager
+  MARKETING // Marketing manager
   MODERATOR // Moderator
   USER // User
 }
 
 model User {
-  id            String     @id @default(cuid())
+  id            String             @id @default(cuid())
   name          String? // User's name
-  email         String?    @unique // User's email (unique)
-  emailVerified DateTime?  @map("email_verified") // Timestamp of email verification
+  email         String?            @unique // User's email (unique)
+  emailVerified DateTime?          @map("email_verified") // Timestamp of email verification
   image         String? // URL of user's profile picture
   accounts      Account[] // Accounts linked to the user
   sessions      Session[] // Sessions opened by the user
-  role          Role       @default(USER) // User's role
+  role          Role               @default(USER) // User's role
   password      String? // User's password (hashed)
   addresses     Address[] // Addresses associated with the user
-  phoneNumber   String?    @map("phone_number") // User's phone number
-  createdAt     DateTime   @default(now()) @map("created_at") // Timestamp of user creation
-  updatedAt     DateTime   @updatedAt @map("updated_at") // Timestamp of last update
+  phoneNumber   String?            @map("phone_number") // User's phone number
   cartItems     CartItem[] // Items in user's cart
   favorites     Product[] // Products marked as favorites by the user
   comments      Comment[] // Comments made by the user
+  financialData FinancialData? // Financial data of the user
+  attributes    ProductAttribute[] // Product attributes created by the user
+
+  createdAt DateTime @default(now()) @map("created_at") // Timestamp of user creation
+  updatedAt DateTime @updatedAt @map("updated_at") // Timestamp of last update
 }
 
 model Product {
@@ -70,48 +74,53 @@ model Product {
   images      String[] // URLs of product images
   category    Category   @relation(fields: [categoryId], references: [id]) // Category to which the product belongs
   categoryId  Int        @map("category_id")
-  createdAt   DateTime   @default(now()) @map("created_at") // Timestamp of product creation
-  updatedAt   DateTime   @updatedAt @map("updated_at") // Timestamp of last update
   comments    Comment[] // Comments made on the product
   User        User?      @relation(fields: [userId], references: [id])
   userId      String?    @map("user_id")
   CartItem    CartItem[]
+
+  createdAt        DateTime           @default(now()) @map("created_at") // Timestamp of product creation
+  updatedAt        DateTime           @updatedAt @map("updated_at") // Timestamp of last update
+  ProductAttribute ProductAttribute[]
 }
 
 model Category {
-  id        Int       @id @default(autoincrement())
-  name      String // Category's name
-  createdAt DateTime  @default(now()) // Timestamp of category creation
-  updatedAt DateTime  @updatedAt // Timestamp of last update
-  products  Product[] // Products belonging to the category
+  id       Int       @id @default(autoincrement())
+  name     String // Category's name
+  products Product[] // Products belonging to the category
+
+  createdAt DateTime @default(now()) // Timestamp of category creation
+  updatedAt DateTime @updatedAt // Timestamp of last update
 }
 
 model Comment {
-  id        Int      @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   content   String // Comment content
-  rating    Int      @default(0) // Rating given by the user (0-5)
+  rating    Int     @default(0) // Rating given by the user (0-5)
+  user      User    @relation(fields: [userId], references: [id]) // User who made the comment
+  userId    String  @map("user_id")
+  product   Product @relation(fields: [productId], references: [id]) // Product on which the comment was made
+  productId Int     @map("product_id")
+
   createdAt DateTime @default(now()) @map("created_at") // Timestamp of comment creation
   updatedAt DateTime @updatedAt @map("updated_at") // Timestamp of last update
-  user      User     @relation(fields: [userId], references: [id]) // User who made the comment
-  userId    String   @map("user_id")
-  product   Product  @relation(fields: [productId], references: [id]) // Product on which the comment was made
-  productId Int      @map("product_id")
 }
 
 model CartItem {
-  id        Int      @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   quantity  Int // Quantity of the product in the cart
+  user      User    @relation(fields: [userId], references: [id]) // User who added the item to the cart
+  userId    String  @map("user_id")
+  product   Product @relation(fields: [productId], references: [id]) // Product in the cart
+  productId Int     @map("product_id")
+
   createdAt DateTime @default(now()) @map("created_at") // Timestamp of cart item creation
   updatedAt DateTime @updatedAt @map("updated_at") // Timestamp of last update
-  user      User     @relation(fields: [userId], references: [id]) // User who added the item to the cart
-  userId    String   @map("user_id")
-  product   Product  @relation(fields: [productId], references: [id]) // Product in the cart
-  productId Int      @map("product_id")
 }
 
 model Address {
   id           Int    @id @default(autoincrement())
-  name         String // Name of the address (e.g. 'Home', 'Work', ...)
+  name         String // Name of the address (e.g., 'Home', 'Work', ...)
   street       String // Street name
   number       String // Street number
   neighborhood String // Neighborhood
@@ -123,4 +132,24 @@ model Address {
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model FinancialData {
+  id          String   @id @default(cuid())
+  userId      String   @unique @map("user_id")
+  user        User     @relation(fields: [userId], references: [id])
+  revenue     Float    @default(0)
+  expenses    Float    @default(0)
+  profit      Float    @default(0)
+  lastUpdated DateTime @default(now()) @map("last_updated")
+}
+
+model ProductAttribute {
+  id        Int     @id @default(autoincrement())
+  name      String // Name of the attribute (ex: "Size", "Color"...)
+  value     String // Value of the attribute (ex: "XL", "Red"...)
+  product   Product @relation(fields: [productId], references: [id]) // Product to which the attribute belongs
+  productId Int     @map("product_id")
+  User      User?   @relation(fields: [userId], references: [id])
+  userId    String?
 }

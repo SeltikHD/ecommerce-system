@@ -28,6 +28,8 @@
         "addressDeleteConfirmTitle": "Deletar endereço",
         "yes": "Sim",
         "no": "Não",
+        "create": "Criar",
+        "update": "Atualizar",
         "street": "Rua",
         "number": "Número",
         "neighborhood": "Bairro",

@@ -28,6 +28,8 @@
         "addressDeleteConfirmTitle": "Delete Address",
         "yes": "Yes",
         "no": "No",
+        "create": "Create",
+        "update": "Update",
         "street": "Street",
         "number": "Number",
         "neighborhood": "Neighborhood",

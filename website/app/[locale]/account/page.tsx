@@ -52,6 +52,8 @@ function Content({ user, addresses }: { user: User; addresses: Address[] }) {
                 addressDeleteConfirmTitle: t('Account.addressDeleteConfirmTitle'),
                 yes: t('Account.yes'),
                 no: t('Account.no'),
+                create: t('Account.create'),
+                update: t('Account.update'),
                 street: t('Account.street'),
                 number: t('Account.number'),
                 neighborhood: t('Account.neighborhood'),

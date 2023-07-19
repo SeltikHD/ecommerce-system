@@ -2,6 +2,7 @@
 import type { Address } from '@prisma/client';
 import { returnIfCorrectType } from '@/utils/types';
 import { getServerSession } from 'next-auth';
+import { postalCodeRegex } from '@/utils/regex';
 import { NextResponse } from 'next/server';
 import { callbacks } from '../../../auth/[...nextauth]/route';
 import prisma from '@/lib/prisma';
@@ -10,6 +11,11 @@ export type AddressUpdate = Omit<Address, 'userId' | 'createdAt' | 'updatedAt'>;
 
 export async function PUT(req: Request) {
     const { id, name, street, number, neighborhood, city, state, postalCode } = (await req.json()) as AddressUpdate;
+
+    if (postalCodeRegex.test(postalCode) === false) {
+        return NextResponse.json({ error: 'Invalid postal code' }, { status: 400 });
+    }
+
     const session = await getServerSession(callbacks);
 
     if (typeof session?.user?.id !== 'string') {

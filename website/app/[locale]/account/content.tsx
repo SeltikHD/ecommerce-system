@@ -1,10 +1,13 @@
 'use client';
 
 import type { Address, User } from '@prisma/client';
-import type { AddressUpdate } from '@/app/api/update/user/address/update';
-import type { AddressAdd } from '@/app/api/update/user/address/add';
+import type { AddressUpdate } from '@/app/api/update/user/address/route';
+import type { AddressAdd } from '@/app/api/add/user/address/route';
 import { useEffect, useState } from 'react';
+import { postalCodeRegex } from '@/utils/regex';
 import { replaceValues } from '@/utils/string';
+import { ClickableDiv } from '@/components/clickable-div';
+import { BsTrashFill } from 'react-icons/bs';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import SignOut from '@/components/sign-out';
@@ -42,6 +45,8 @@ interface AddressTexts {
     addressDeleteConfirmTitle: string;
     yes: string;
     no: string;
+    create: string;
+    update: string;
     street: string;
     number: string;
     neighborhood: string;
@@ -184,51 +189,137 @@ const UserAccount = ({ user, addresses, texts }: UserAccountProps) => {
 };
 
 function Addresses({ addresses, texts }: { addresses: Address[]; texts: AddressTexts }) {
+    const [selectedAddress, setSelectedAddress] = useState<Address>();
     const [mode, setMode] = useState<'edit' | 'add' | null>(null);
+    const router = useRouter();
 
     return (
-        <div className="flex flex-col items-center h-full w-full gap-4 mt-4 space-y-4 p-10 py-7 rounded-lg">
-            <h1 className="text-2xl font-bold">{texts.addresses}</h1>
-            <div className={clsx('flex flex-col space-y-4', { hidden: mode !== null })}>
-                {addresses.length > 0 ? (
-                    addresses.map(({ id, name, street, number, neighborhood, city, state, postalCode }) => (
-                        <div key={'address-' + id} className="flex flex-col space-y-2">
-                            <div className="flex justify-between">
-                                <h1 className="text-xl font-bold">{name}</h1>
-                                <button className="btn btn-sm btn-circle btn-ghost">X</button>
-                            </div>
-                            <p className="text-lg">
-                                {replaceValues(texts.fullAddress, {
-                                    street,
-                                    number,
-                                    neighborhood,
-                                    city,
-                                    state,
-                                    postalCode,
-                                })}
-                            </p>
-                        </div>
-                    ))
-                ) : (
-                    <p className="text-lg">{texts.noneAddresses}...</p>
-                )}
-                <button
-                    type="button"
-                    className="btn btn-success btn-circle text-2xl absolute bottom-2 right-2"
-                    onClick={() => setMode('add')}
-                >
-                    +
-                </button>
+        <>
+            <dialog id="exclusion" className="modal">
+                <form method="dialog" className="modal-box">
+                    <h3 className="font-bold text-lg">{texts.addressDeleteConfirmTitle}</h3>
+                    <p>{texts.addressDeleteConfirm}</p>
+                    <div className="modal-action">
+                        <button className="btn" onClick={() => setSelectedAddress(undefined)}>
+                            {texts.no}
+                        </button>
+                        <button
+                            className="btn btn-error"
+                            onClick={async () => {
+                                //Delete address
+                                try {
+                                    const response = await fetch('/api/delete/user/address', {
+                                        method: 'DELETE',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({ id: selectedAddress?.id }),
+                                    });
+
+                                    if (response.ok) {
+                                        toast.success(texts.addressDeleted);
+
+                                        setTimeout(() => router.refresh(), 2000);
+                                    } else {
+                                        toast.error(texts.addressDeleteFailed);
+                                    }
+                                } catch (error) {
+                                    toast.error(
+                                        `${texts.addressDeleteFailed}: ${error?.toString() ?? 'unknown error'}`,
+                                    );
+                                }
+
+                                setSelectedAddress(undefined);
+                                setMode(null);
+                            }}
+                        >
+                            {texts.yes}
+                        </button>
+                    </div>
+                </form>
+            </dialog>
+            <div className="flex flex-col items-center h-full w-full gap-4 mt-4 space-y-4 p-10 py-7 rounded-lg">
+                <h1 className="text-2xl font-bold">{texts.addresses}</h1>
+                <div className={clsx('flex flex-col space-y-4', { hidden: mode !== null })}>
+                    {addresses.length > 0 ? (
+                        addresses.map(data => {
+                            const { id, name, street, number, neighborhood, city, state, postalCode } = data;
+
+                            return (
+                                <ClickableDiv
+                                    key={'address-' + id}
+                                    className="flex flex-col space-y-2 border border-black p-2 rounded-lg"
+                                    onClick={() => {
+                                        setSelectedAddress(data);
+                                        setMode('edit');
+                                    }}
+                                >
+                                    <div className="flex justify-between">
+                                        <h1 className="text-xl font-bold">{name}</h1>
+                                        <button
+                                            className="btn btn-sm btn-circle btn-ghost"
+                                            onClick={() => {
+                                                setSelectedAddress(data);
+                                                setMode(null);
+                                                (window as any).exclusion.showModal();
+                                            }}
+                                        >
+                                            <BsTrashFill />
+                                        </button>
+                                    </div>
+                                    <p className="text-lg">
+                                        {replaceValues(texts.fullAddress, {
+                                            street,
+                                            number,
+                                            neighborhood,
+                                            city,
+                                            state,
+                                            postalCode,
+                                        })}
+                                    </p>
+                                </ClickableDiv>
+                            );
+                        })
+                    ) : (
+                        <p className="text-lg">{texts.noneAddresses}...</p>
+                    )}
+                    <button
+                        type="button"
+                        className="btn btn-success btn-circle text-2xl absolute bottom-2 right-2"
+                        onClick={() => setMode('add')}
+                    >
+                        +
+                    </button>
+                </div>
+                <Form
+                    hidden={mode === null}
+                    texts={texts}
+                    dissmiss={() => setMode(null)}
+                    defaultAddress={selectedAddress}
+                />
             </div>
-            <Form className={clsx({ hidden: mode === null })} texts={texts} dissmiss={() => setMode(null)} />
-        </div>
+        </>
     );
 }
 
-const Form = ({ className, texts, dissmiss }: { className: string; texts: AddressTexts; dissmiss: () => void }) => {
+const Form = ({
+    className,
+    texts,
+    dissmiss,
+    defaultAddress = {},
+    hidden = false,
+}: {
+    texts: AddressTexts;
+    dissmiss: () => void;
+    className?: string;
+    defaultAddress?: Partial<Address>;
+    hidden?: boolean;
+}) => {
     const router = useRouter();
 
-    const { register, handleSubmit, formState } = useForm<AddressAdd | AddressUpdate>();
+    const { register, handleSubmit, formState, setValue, clearErrors, reset } = useForm<AddressAdd | AddressUpdate>({
+        defaultValues: defaultAddress,
+    });
 
     const [loading, setLoading] = useState(false);
 
@@ -236,30 +327,52 @@ const Form = ({ className, texts, dissmiss }: { className: string; texts: Addres
         setLoading(true);
 
         try {
-            const response = await fetch('/api/update/address', {
-                method: 'POST',
+            const response = await fetch(defaultAddress.id ? '/api/update/user/address' : '/api/add/user/address', {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(data),
+                body: JSON.stringify({ ...defaultAddress, ...data }),
             });
 
             if (response.ok) {
-                toast.success(texts.addressAdded);
+                toast.success(defaultAddress.id ? texts.addressUpdated : texts.addressAdded);
 
                 setTimeout(() => router.refresh(), 2000);
             } else {
-                toast.error(texts.addressAddFailed);
+                toast.error(defaultAddress.id ? texts.addressUpdateFailed : texts.addressAddFailed);
             }
         } catch (error) {
-            toast.error(`${texts.addressAddFailed}: ${error?.toString() ?? 'unknown error'}`);
+            toast.error(
+                `${defaultAddress.id ? texts.addressUpdateFailed : texts.addressAddFailed}: ${
+                    error?.toString() ?? 'unknown error'
+                }`,
+            );
         }
 
         setLoading(false);
+        dissmiss();
     };
 
+    useEffect(() => {
+        reset();
+    }, [reset, hidden]);
+
+    useEffect(() => {
+        Object.keys(defaultAddress).forEach(k => {
+            const key = k as keyof AddressAdd | keyof AddressUpdate;
+            const value = defaultAddress[key];
+
+            if (value) {
+                setValue(key, value);
+            }
+        });
+
+        clearErrors();
+    }, [clearErrors, defaultAddress, setValue]);
+
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className={clsx('flex flex-col space-y-4', className)}>
+        <div role="form" className={clsx('flex flex-col space-y-4', className, { hidden })}>
             <input
                 type="text"
                 id="name"
@@ -307,17 +420,29 @@ const Form = ({ className, texts, dissmiss }: { className: string; texts: Addres
                 id="postalCode"
                 className="input w-full input-bordered"
                 placeholder={texts.postalCode}
-                {...register('postalCode', { required: true })}
+                {...register('postalCode', { required: true, pattern: postalCodeRegex })}
             />
             <div className="flex justify-evenly">
-                <button type="button" className="btn btn-error" onClick={dissmiss}>
+                <button
+                    type="button"
+                    className="btn btn-error"
+                    onClick={() => {
+                        dissmiss();
+                        reset();
+                    }}
+                >
                     {texts.no}
                 </button>
-                <button type="submit" className="btn btn-primary" disabled={loading || !formState.isValid}>
+                <button
+                    type="submit"
+                    className="btn btn-primary"
+                    onClick={handleSubmit(onSubmit)}
+                    disabled={loading || !formState.isValid}
+                >
                     {texts.yes}
                 </button>
             </div>
-        </form>
+        </div>
     );
 };
 
