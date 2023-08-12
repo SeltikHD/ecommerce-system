@@ -66,7 +66,12 @@ const UserAccount = ({ user, addresses, texts }: UserAccountProps) => {
 
     const { name, email, phoneNumber, image } = user;
 
-    const { register, handleSubmit, setValue } = useForm<FormValues>({
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        formState: { isValid },
+    } = useForm<FormValues>({
         defaultValues: {
             name: name ?? undefined,
             phoneNumber: phoneNumber ?? undefined,
@@ -163,7 +168,9 @@ const UserAccount = ({ user, addresses, texts }: UserAccountProps) => {
                         id="phoneNumber"
                         className="input w-full input-bordered"
                         placeholder={texts.phoneNumber}
-                        {...register('phoneNumber')}
+                        {...register('phoneNumber', {
+                            pattern: /^(?:\+\d{2,3}\s?)?(?:\(?\d{2,3}\)?\s?)?\d{4,5}-?\d{4}$/,
+                        })}
                         disabled={blockForm}
                     />
                     <button
@@ -178,7 +185,7 @@ const UserAccount = ({ user, addresses, texts }: UserAccountProps) => {
                         <SignOut type="button" className="btn btn-error">
                             {texts.signOut}
                         </SignOut>
-                        <button type="submit" className="btn btn-primary" disabled={loading || blockForm}>
+                        <button type="submit" className="btn btn-primary" disabled={loading || blockForm || !isValid}>
                             {texts.updateButton}
                         </button>
                     </div>

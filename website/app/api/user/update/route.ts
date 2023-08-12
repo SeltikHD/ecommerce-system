@@ -24,7 +24,11 @@ export async function POST(req: Request) {
                 name: returnIfCorrectType(name, 'string'),
                 password: returnIfCorrectType(password, 'string'),
                 image: returnIfCorrectType(image, 'string'),
-                phoneNumber: returnIfCorrectType(phoneNumber, 'string'),
+                phoneNumber: returnIfCorrectType(
+                    phoneNumber,
+                    'string',
+                    /^(?:\+\d{2,3}\s?)?(?:\(?\d{2,3}\)?\s?)?\d{4,5}-?\d{4}$/,
+                ),
             },
             where: { id: session.user.id },
         });
