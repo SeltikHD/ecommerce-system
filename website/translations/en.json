@@ -49,7 +49,17 @@
         "title": "Sign Out",
         "description": "Signing out..."
     },
+    "Admin": {},
     "Components": {
+        "Admin": {
+            "Drawer": {
+                "dashboard": "Dashboard",
+                "products": "Products",
+                "orders": "Orders",
+                "users": "Users",
+                "settings": "Settings"
+            }
+        },
         "SearchBar": {
             "placeholder": "What are you looking for?"
         },

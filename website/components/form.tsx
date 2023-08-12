@@ -73,7 +73,7 @@ export default function Form({ type, texts }: FormProps) {
             const { fullName, email, password } = data;
 
             if (fullName) {
-                fetch('/api/auth/register', {
+                fetch('/api/user/add', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

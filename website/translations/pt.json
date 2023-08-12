@@ -49,7 +49,17 @@
         "title": "Sair da conta",
         "description": "Você está saindo da conta"
     },
+    "Admin": {},
     "Components": {
+        "Admin": {
+            "Drawer": {
+                "dashboard": "Dashboard",
+                "products": "Produtos",
+                "orders": "Pedidos",
+                "users": "Usuários",
+                "settings": "Configurações"
+            }
+        },
         "SearchBar": {
             "placeholder": "O que você está procurando?"
         },

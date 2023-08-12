@@ -6,7 +6,6 @@ import { createTranslator, useLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { Toaster } from 'react-hot-toast';
 import { Inter } from 'next/font/google';
-import Navbar from '@/components/header';
 
 /* TODO: Uncomment this to enable static generation
 export function generateStaticParams() {
@@ -49,6 +48,7 @@ export default async function RootLayout({
     params: { locale: string };
 }) {
     try {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         const locale = useLocale();
 
         // Show a 404 error if the user requests an unknown locale
@@ -56,18 +56,10 @@ export default async function RootLayout({
             notFound();
         }
 
-        const messages = (await import(`../../translations/${locale}.json`)).default;
-
-        const t = createTranslator({ locale, messages });
-
         return (
             <html data-theme="light" lang={locale}>
                 <body className={inter.variable}>
                     <Toaster />
-                    <Navbar
-                        homeText={t('Components.Header.home')}
-                        searchPlaceholder={t('Components.SearchBar.placeholder')}
-                    />
                     {children}
                 </body>
             </html>

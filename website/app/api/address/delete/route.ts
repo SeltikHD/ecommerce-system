@@ -2,7 +2,7 @@
 import type { Address } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
-import { callbacks } from '../../../auth/[...nextauth]/route';
+import { callbacks } from '../../auth/[...nextauth]/route';
 import prisma from '@/lib/prisma';
 
 export type AddressUpdate = Omit<Address, 'userId' | 'createdAt' | 'updatedAt'>;

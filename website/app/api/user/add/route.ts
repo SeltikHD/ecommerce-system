@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { adapter } from '../[...nextauth]/route';
+import { adapter } from '../../auth/[...nextauth]/route';
 import { hash } from 'bcrypt';
 import prisma from '@/lib/prisma';
 

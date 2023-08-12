@@ -1,8 +1,8 @@
 'use client';
 
 import type { Address, User } from '@prisma/client';
-import type { AddressUpdate } from '@/app/api/update/user/address/route';
-import type { AddressAdd } from '@/app/api/add/user/address/route';
+import type { AddressUpdate } from '@/app/api/address/update/route';
+import type { AddressAdd } from '@/app/api/address/add/route';
 import { useEffect, useState } from 'react';
 import { postalCodeRegex } from '@/utils/regex';
 import { replaceValues } from '@/utils/string';
@@ -91,7 +91,7 @@ const UserAccount = ({ user, addresses, texts }: UserAccountProps) => {
         setLoading(true);
 
         try {
-            const response = await fetch('/api/update/user', {
+            const response = await fetch('/api/user/update', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -208,7 +208,7 @@ function Addresses({ addresses, texts }: { addresses: Address[]; texts: AddressT
                             onClick={async () => {
                                 //Delete address
                                 try {
-                                    const response = await fetch('/api/delete/user/address', {
+                                    const response = await fetch('/api/address/delete/', {
                                         method: 'DELETE',
                                         headers: {
                                             'Content-Type': 'application/json',
@@ -327,7 +327,7 @@ const Form = ({
         setLoading(true);
 
         try {
-            const response = await fetch(defaultAddress.id ? '/api/update/user/address' : '/api/add/user/address', {
+            const response = await fetch(defaultAddress.id ? '/api/address/update' : '/api/address/add', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

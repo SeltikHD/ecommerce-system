@@ -4,7 +4,7 @@ import { returnIfCorrectType } from '@/utils/types';
 import { getServerSession } from 'next-auth';
 import { postalCodeRegex } from '@/utils/regex';
 import { NextResponse } from 'next/server';
-import { callbacks } from '../../../auth/[...nextauth]/route';
+import { callbacks } from '../../auth/[...nextauth]/route';
 import prisma from '@/lib/prisma';
 
 export type AddressUpdate = Omit<Address, 'userId' | 'createdAt' | 'updatedAt'>;
